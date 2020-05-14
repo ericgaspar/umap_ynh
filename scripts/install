@@ -51,7 +51,9 @@ openstreetmap_key=$YNH_APP_ARG_OPENSTREETMAP_KEY
 openstreetmap_secret=$YNH_APP_ARG_OPENSTREETMAP_SECRET
 
 app=$YNH_APP_INSTANCE_NAME
-db_name=$app
+
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
 
 
 
@@ -78,6 +80,7 @@ ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app language $language
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app db_name $db_name
+ynh_app_setting_set $app final_path $final_path
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -130,7 +133,7 @@ sudo chown -R $app:$app $final_path
 
 ynh_script_progression --message="Setting up databse for Umap..." --time --weight=1
 
-ynh_psql_setup_db $db_name $db_name
+ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
 
 # Activate PostGIS extension
 ynh_psql_create_extension $app postgis
